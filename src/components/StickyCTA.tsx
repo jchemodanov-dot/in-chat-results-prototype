@@ -1,47 +1,36 @@
-import { useState } from "react";
+interface StickyCTAProps {
+  onAction: () => void;
+}
 
-export function StickyCTA() {
-  const [toast, setToast] = useState(false);
-
-  function handleClick() {
-    setToast(true);
-    window.setTimeout(() => setToast(false), 1700);
-  }
-
+export function StickyCTA({ onAction }: StickyCTAProps) {
   return (
     <div className="pointer-events-none">
-      {/* Gradient fade so the CTA does not cut content harshly */}
-      <div className="h-14 bg-gradient-to-b from-transparent to-background" />
-      <div className="bg-background px-5 pt-1 pb-7 pointer-events-auto">
-        <p className="text-center text-[13px] text-text-secondary mb-2.5">
+      {/* Gradient fade so the CTA never cuts content harshly */}
+      <div className="h-20 bg-gradient-to-b from-transparent to-app" />
+      <div className="bg-app px-5 pt-4 pb-7 pointer-events-auto">
+        <p className="text-center text-[15px] text-ink-soft mb-3">
           Разберём, что с этим делать дальше?
         </p>
         <button
           type="button"
-          onClick={handleClick}
+          onClick={onAction}
           className="
-            w-full h-[56px] rounded-full
+            w-full h-[68px] rounded-full
             bg-primary text-white
-            font-semibold text-[16px]
+            font-bold text-[24px]
             shadow-cta
-            active:scale-[0.985]
+            active:scale-[0.98]
             hover:bg-primary-dark
             transition-all duration-150
-            flex items-center justify-center gap-2
+            flex items-center justify-center gap-2.5
           "
         >
           Смотреть план
-          <span aria-hidden className="text-[18px] leading-none">
+          <span aria-hidden className="text-[26px] leading-none">
             →
           </span>
         </button>
       </div>
-
-      {toast && (
-        <div className="fade-in absolute bottom-[120px] left-1/2 -translate-x-1/2 bg-text-primary text-white text-[13px] px-4 py-2.5 rounded-xl shadow-lg whitespace-nowrap pointer-events-none">
-          Переход к персональному плану
-        </div>
-      )}
     </div>
   );
 }

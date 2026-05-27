@@ -1,97 +1,81 @@
 import { useState } from "react";
 
-function LockIcon({ size = 14, color = "#FF8A1F" }: { size?: number; color?: string }) {
+function LockIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-    >
-      <rect x="5" y="11" width="14" height="10" rx="2.5" fill={color} />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <rect x="5" y="11" width="14" height="9.5" rx="2.5" fill="#FF8A1F" />
       <path
-        d="M8 11V8C8 5.79 9.79 4 12 4C14.21 4 16 5.79 16 8V11"
-        stroke={color}
+        d="M8 11V8.2C8 6 9.8 4.2 12 4.2S16 6 16 8.2V11"
+        stroke="#FF8A1F"
         strokeWidth="2"
       />
     </svg>
   );
 }
 
-export function LockedTeaser() {
+interface LockedTeaserProps {
+  onLockedTap: () => void;
+}
+
+export function LockedTeaser({ onLockedTap }: LockedTeaserProps) {
   const [active, setActive] = useState(false);
-  const [tooltip, setTooltip] = useState(false);
 
   function handleClick() {
     setActive(true);
-    setTooltip(true);
-    window.setTimeout(() => setActive(false), 220);
-    window.setTimeout(() => setTooltip(false), 1700);
+    onLockedTap();
+    window.setTimeout(() => setActive(false), 240);
   }
 
   return (
-    <div className="mx-5 mt-3 mb-4 fade-up-delay-2 relative">
+    <div className="mx-5 mt-4 fade-up-delay-2">
       <button
         type="button"
         onClick={handleClick}
         className={`
-          relative w-full text-left
-          rounded-[24px]
-          bg-surface
-          p-5
-          border border-[#ECEEFA]
-          shadow-[0_4px_18px_-10px_rgba(40,50,90,0.10)]
+          w-full text-left
+          rounded-[28px]
+          bg-premium-soft
+          p-[22px]
+          border
           transition-all duration-200
-          ${active ? "scale-[0.99] bg-[#FBFBFF]" : ""}
+          ${active ? "border-premium scale-[0.995] shadow-lift" : "border-premium/25"}
         `}
       >
-        <div className="flex items-center gap-2 mb-2">
-          <span
-            className="w-7 h-7 rounded-full flex items-center justify-center"
-            style={{ backgroundColor: "rgba(255,138,31,0.14)" }}
-          >
-            <LockIcon size={13} />
+        <div className="flex items-center gap-2.5 mb-2.5">
+          <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-[0_2px_8px_-3px_rgba(255,138,31,0.5)] shrink-0">
+            <LockIcon size={15} />
           </span>
-          <h3 className="text-[16px] font-semibold text-text-primary">
+          <h3 className="text-[22px] font-bold text-ink tracking-tight leading-tight">
             Твой скрытый паттерн
           </h3>
         </div>
 
-        <p className="text-[14px] leading-[1.5] text-text-secondary mb-4">
+        <p className="text-[18px] leading-[1.5] text-ink-soft mb-4">
           Мы нашли ещё один повторяющийся сценарий, который может влиять на твоё
           состояние в отношениях.
         </p>
 
         {/* Blur preview */}
-        <div className="relative rounded-[16px] bg-[#F7F8FC] p-4 overflow-hidden">
+        <div className="relative rounded-[18px] bg-white p-5 overflow-hidden border border-premium/15">
           <div
-            className="space-y-2.5 select-none"
+            className="space-y-3 select-none"
             style={{ filter: "blur(5px)" }}
             aria-hidden
           >
-            <div className="h-2.5 rounded-full bg-[#D7DAE8] w-[92%]" />
-            <div className="h-2.5 rounded-full bg-[#D7DAE8] w-[78%]" />
-            <div className="h-2.5 rounded-full bg-[#D7DAE8] w-[85%]" />
-            <div className="h-2.5 rounded-full bg-[#D7DAE8] w-[65%]" />
+            <div className="h-3 rounded-full bg-[#DCDFEC] w-[92%]" />
+            <div className="h-3 rounded-full bg-[#DCDFEC] w-[78%]" />
+            <div className="h-3 rounded-full bg-[#DCDFEC] w-[85%]" />
+            <div className="h-3 rounded-full bg-[#DCDFEC] w-[64%]" />
           </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-10 h-10 rounded-full bg-white shadow-[0_6px_16px_-6px_rgba(255,138,31,0.45)] flex items-center justify-center">
-              <LockIcon size={17} />
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+            <div className="w-12 h-12 rounded-full bg-white shadow-[0_6px_18px_-6px_rgba(255,138,31,0.5)] flex items-center justify-center">
+              <LockIcon size={20} />
             </div>
+            <span className="text-[14px] font-semibold text-premium">
+              Откроем в персональном плане
+            </span>
           </div>
         </div>
-
-        <p className="text-[13px] text-premium font-medium mt-3.5 flex items-center gap-1.5">
-          <LockIcon size={11} />
-          Откроем в персональном плане
-        </p>
-
-        {tooltip && (
-          <div className="fade-in absolute -top-9 left-1/2 -translate-x-1/2 bg-text-primary text-white text-[12px] px-3 py-1.5 rounded-lg whitespace-nowrap shadow-lg">
-            Доступно в персональном плане
-          </div>
-        )}
       </button>
     </div>
   );
