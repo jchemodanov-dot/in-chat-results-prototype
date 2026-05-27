@@ -4,30 +4,20 @@ interface InfoSectionProps {
   icon: ReactNode;
   title: string;
   children: ReactNode;
-  accent?: "primary" | "default";
 }
 
-export function InfoSection({
-  icon,
-  title,
-  children,
-  accent = "default",
-}: InfoSectionProps) {
+export function InfoSection({ icon, title, children }: InfoSectionProps) {
   return (
-    <div className="pt-[22px] mt-[22px] border-t border-line-soft">
-      <div className="flex items-center gap-2.5 mb-2.5">
-        <span className="w-7 h-7 flex items-center justify-center text-primary shrink-0">
+    <div className="pt-5 mt-5 border-t border-[#EEF0F8]">
+      <div className="flex items-center gap-2 mb-2">
+        <span className="w-5 h-5 flex items-center justify-center text-primary">
           {icon}
         </span>
-        <h3
-          className={`text-[22px] font-bold tracking-tight leading-tight ${
-            accent === "primary" ? "text-primary" : "text-ink"
-          }`}
-        >
+        <h3 className="text-[12px] font-semibold uppercase tracking-[0.10em] text-text-secondary">
           {title}
         </h3>
       </div>
-      <p className="text-[18px] leading-[1.5] text-ink-soft">{children}</p>
+      <p className="text-[15px] leading-[1.55] text-text-primary">{children}</p>
     </div>
   );
 }

@@ -7,16 +7,16 @@ interface PhoneFrameProps {
 
 export function PhoneFrame({ children, bottomFixed }: PhoneFrameProps) {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-0 sm:p-6">
+    <div className="min-h-screen w-full flex items-center justify-center sm:p-6 p-0">
       <div
         className="
           relative
           w-full sm:w-[390px]
           h-[100dvh] sm:h-[844px]
           sm:max-h-[calc(100dvh-48px)]
-          bg-app
+          bg-background
+          sm:rounded-[44px]
           overflow-hidden
-          sm:rounded-[46px]
           sm:shadow-phone
           sm:ring-1 sm:ring-black/5
         "
