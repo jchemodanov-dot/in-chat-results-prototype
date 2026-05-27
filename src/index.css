@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(180deg, #f1f3fa 0%, #e6eaf5 100%);
+  color: #111;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-up {
+  animation: fadeUp 520ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.fade-up-delay-1 {
+  animation: fadeUp 520ms cubic-bezier(0.22, 0.61, 0.36, 1) 80ms both;
+}
+
+.fade-up-delay-2 {
+  animation: fadeUp 520ms cubic-bezier(0.22, 0.61, 0.36, 1) 180ms both;
+}
+
+.fade-in {
+  animation: fadeIn 200ms ease-out both;
+}
+
+/* Scrollbar — invisible inside phone, clean look */
+.phone-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
