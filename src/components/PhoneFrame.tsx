@@ -7,9 +7,10 @@ interface PhoneFrameProps {
 
 export function PhoneFrame({ children, bottomFixed }: PhoneFrameProps) {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center sm:p-6 p-0">
+    <div className="phone-outer min-h-screen w-full flex items-center justify-center sm:p-6 p-0">
       <div
         className="
+          phone-shell
           relative
           w-full sm:w-[390px]
           h-[100dvh] sm:h-[844px]
@@ -25,7 +26,7 @@ export function PhoneFrame({ children, bottomFixed }: PhoneFrameProps) {
           {children}
         </div>
         {bottomFixed && (
-          <div className="absolute bottom-0 left-0 right-0 z-30">
+          <div className="phone-bottom absolute bottom-0 left-0 right-0 z-30">
             {bottomFixed}
           </div>
         )}
