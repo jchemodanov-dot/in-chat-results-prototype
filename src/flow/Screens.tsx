@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import type { ThemeContent } from "../content/themes";
-import { Illustration } from "./Illustration";
+import { AnimatedIllustration } from "./AnimatedIllustration";
 import { Confetti } from "./Confetti";
 import { Spark, Check } from "../components/icons";
 
@@ -10,6 +10,10 @@ const pop = { type: "spring", stiffness: 340, damping: 17 } as const;
 
 const HEAD = "text-[#22222e]";
 const SUB = "text-[#6a6a7a]";
+
+const HEART_THEMES = ["relationships", "loneliness"];
+const decorFor = (id: string): "hearts" | "sparkles" =>
+  HEART_THEMES.includes(id) ? "hearts" : "sparkles";
 
 /* ---------- 0 · Scanning -------------------------------------------------- */
 export function ScanScreen({ theme }: { theme: ThemeContent }) {
@@ -23,11 +27,11 @@ export function ScanScreen({ theme }: { theme: ThemeContent }) {
 
   return (
     <div className="h-full flex flex-col items-center justify-center px-8 text-center">
-      <div className="relative mb-12 w-[170px] h-[170px] flex items-center justify-center">
+      <div className="relative mb-10 w-[236px] h-[236px] flex items-center justify-center">
         {[0, 1, 2].map((k) => (
           <span
             key={k}
-            className="pulse-ring absolute w-[150px] h-[150px] rounded-full"
+            className="pulse-ring absolute w-[200px] h-[200px] rounded-full"
             style={{
               background:
                 "radial-gradient(circle, color-mix(in srgb, var(--accent) 38%, transparent), transparent 70%)",
@@ -36,7 +40,7 @@ export function ScanScreen({ theme }: { theme: ThemeContent }) {
           />
         ))}
         <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={spring}>
-          <Illustration id="scan" size={150} />
+          <AnimatedIllustration id="scan" size={208} />
         </motion.div>
       </div>
       <motion.p
@@ -70,7 +74,7 @@ export function RevealScreen({ theme }: { theme: ThemeContent }) {
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ ...spring, delay: 0.05 }}
       >
-        <Illustration id={theme.id} size={232} />
+        <AnimatedIllustration id={theme.id} size={328} decor={decorFor(theme.id)} />
       </motion.div>
       <motion.h1
         initial={{ y: 24, opacity: 0 }}
@@ -97,7 +101,7 @@ export function InsightScreen({ theme }: { theme: ThemeContent }) {
   return (
     <div className="h-full flex flex-col items-center justify-center px-8 text-center">
       <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={spring}>
-        <Illustration id={theme.id} size={144} />
+        <AnimatedIllustration id={theme.id} size={212} decor={decorFor(theme.id)} />
       </motion.div>
       <motion.p
         initial={{ y: 22, opacity: 0 }}
@@ -124,7 +128,7 @@ export function JourneyScreen({ theme }: { theme: ThemeContent }) {
       </motion.h2>
       <div className="flex justify-center mb-4">
         <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={spring}>
-          <Illustration id="journey" size={132} />
+          <AnimatedIllustration id="journey" size={176} decor="none" />
         </motion.div>
       </div>
       <div className="space-y-2.5">
@@ -229,7 +233,7 @@ export function PlanScreen({ theme }: { theme: ThemeContent }) {
         transition={spring}
         className="flex justify-center mb-3"
       >
-        <Illustration id={theme.id} size={116} />
+        <AnimatedIllustration id={theme.id} size={158} decor={decorFor(theme.id)} />
       </motion.div>
       <motion.h2
         initial={{ y: 14, opacity: 0 }}
