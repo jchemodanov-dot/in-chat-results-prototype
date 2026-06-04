@@ -41,6 +41,14 @@ export interface ThemeContent {
   balanceNow: number;
   /** where the plan can take it (0–100) */
   balanceTarget: number;
+  /** what tends to set the state off (horizontal bars) */
+  triggers: [
+    { label: string; value: number },
+    { label: string; value: number },
+    { label: string; value: number },
+  ];
+  /** a 3-step self-reinforcing loop (cycle diagram) */
+  loop: [string, string, string];
 }
 
 export const THEMES: ThemeContent[] = [
@@ -81,6 +89,12 @@ export const THEMES: ThemeContent[] = [
     ],
     balanceNow: 34,
     balanceTarget: 78,
+    triggers: [
+      { label: "Его холодность", value: 80 },
+      { label: "Долгое молчание", value: 64 },
+      { label: "Сравнение с другими", value: 50 },
+    ],
+    loop: ["Появляется тревога", "Начинаешь контролировать", "Напряжение растёт"],
   },
   {
     id: "anxiety",
@@ -119,6 +133,12 @@ export const THEMES: ThemeContent[] = [
     ],
     balanceNow: 30,
     balanceTarget: 80,
+    triggers: [
+      { label: "Неопределённость", value: 78 },
+      { label: "Спешка и дедлайны", value: 62 },
+      { label: "Конфликты", value: 50 },
+    ],
+    loop: ["Ловишь сигнал угрозы", "Прокручиваешь сценарии", "Тело не расслабляется"],
   },
   {
     id: "burnout",
@@ -157,6 +177,12 @@ export const THEMES: ThemeContent[] = [
     ],
     balanceNow: 26,
     balanceTarget: 76,
+    triggers: [
+      { label: "Бесконечные задачи", value: 82 },
+      { label: "Чужие ожидания", value: 66 },
+      { label: "Нет паузы на себя", value: 58 },
+    ],
+    loop: ["Берёшь ещё задачи", "Игноришь усталость", "Сил всё меньше"],
   },
   {
     id: "self-esteem",
@@ -195,6 +221,12 @@ export const THEMES: ThemeContent[] = [
     ],
     balanceNow: 28,
     balanceTarget: 78,
+    triggers: [
+      { label: "Чужая оценка", value: 76 },
+      { label: "Ошибки и промахи", value: 64 },
+      { label: "Сравнение в соцсетях", value: 56 },
+    ],
+    loop: ["Сравниваешь себя", "Замечаешь только минусы", "Ценность падает"],
   },
   {
     id: "loneliness",
@@ -233,6 +265,12 @@ export const THEMES: ThemeContent[] = [
     ],
     balanceNow: 30,
     balanceTarget: 76,
+    triggers: [
+      { label: "Вечера в одиночестве", value: 74 },
+      { label: "Шумные компании", value: 58 },
+      { label: "Молчание близких", value: 54 },
+    ],
+    loop: ["Ждёшь, что поймут", "Закрываешься первой", "Связь не случается"],
   },
   {
     id: "boundaries",
@@ -271,5 +309,11 @@ export const THEMES: ThemeContent[] = [
     ],
     balanceNow: 31,
     balanceTarget: 79,
+    triggers: [
+      { label: "Трудные просьбы", value: 78 },
+      { label: "Страх обидеть", value: 64 },
+      { label: "Чужое недовольство", value: 56 },
+    ],
+    loop: ["Соглашаешься через силу", "Копится обида", "Винишь себя"],
   },
 ];
