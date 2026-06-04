@@ -49,6 +49,14 @@ export interface ThemeContent {
   ];
   /** a 3-step self-reinforcing loop (cycle diagram) */
   loop: [string, string, string];
+  /** emotion composition (donut) — values roughly sum to 100 */
+  composition: { label: string; value: number }[];
+  /** strengths / resources the AI noticed (positive counterbalance) */
+  strengths: [string, string, string];
+  /** % of people who describe something similar (normalization) */
+  normPct: number;
+  /** one short anonymized line of encouragement */
+  story: string;
 }
 
 export const THEMES: ThemeContent[] = [
@@ -95,6 +103,19 @@ export const THEMES: ThemeContent[] = [
       { label: "Сравнение с другими", value: 50 },
     ],
     loop: ["Появляется тревога", "Начинаешь контролировать", "Напряжение растёт"],
+    composition: [
+      { label: "Тревога", value: 38 },
+      { label: "Страх потерять", value: 27 },
+      { label: "Обида", value: 20 },
+      { label: "Надежда", value: 15 },
+    ],
+    strengths: [
+      "Ты честно смотришь на свои чувства",
+      "Ты готова разбираться, а не убегать",
+      "Ты способна на глубокую привязанность",
+    ],
+    normPct: 71,
+    story: "«Думала, со мной что-то не так. Оказалось — это понятный паттерн». — Аня",
   },
   {
     id: "anxiety",
@@ -139,6 +160,19 @@ export const THEMES: ThemeContent[] = [
       { label: "Конфликты", value: 50 },
     ],
     loop: ["Ловишь сигнал угрозы", "Прокручиваешь сценарии", "Тело не расслабляется"],
+    composition: [
+      { label: "Тревога", value: 42 },
+      { label: "Напряжение", value: 28 },
+      { label: "Беспомощность", value: 18 },
+      { label: "Усталость", value: 12 },
+    ],
+    strengths: [
+      "Ты внимательна к себе и сигналам тела",
+      "Ты ищешь опору, а не сдаёшься",
+      "Ты уже сделала первый шаг сегодня",
+    ],
+    normPct: 74,
+    story: "«Впервые поняла, что не обязана всё контролировать». — Лена",
   },
   {
     id: "burnout",
@@ -183,6 +217,19 @@ export const THEMES: ThemeContent[] = [
       { label: "Нет паузы на себя", value: 58 },
     ],
     loop: ["Берёшь ещё задачи", "Игноришь усталость", "Сил всё меньше"],
+    composition: [
+      { label: "Усталость", value: 40 },
+      { label: "Опустошённость", value: 26 },
+      { label: "Вина", value: 20 },
+      { label: "Раздражение", value: 14 },
+    ],
+    strengths: [
+      "Ты долго держалась ради важного",
+      "Ты честно признаёшь, что устала",
+      "У тебя есть, ради чего восстановиться",
+    ],
+    normPct: 69,
+    story: "«Разрешила себе паузу — и силы начали возвращаться». — Марина",
   },
   {
     id: "self-esteem",
@@ -227,6 +274,19 @@ export const THEMES: ThemeContent[] = [
       { label: "Сравнение в соцсетях", value: 56 },
     ],
     loop: ["Сравниваешь себя", "Замечаешь только минусы", "Ценность падает"],
+    composition: [
+      { label: "Самокритика", value: 38 },
+      { label: "Стыд", value: 26 },
+      { label: "Тревога", value: 22 },
+      { label: "Надежда", value: 14 },
+    ],
+    strengths: [
+      "Ты требовательна, потому что хочешь лучшего",
+      "Ты способна честно смотреть на себя",
+      "Ты ищешь опору внутри, а не только снаружи",
+    ],
+    normPct: 72,
+    story: "«Перестала сравнивать себя с лентой в телефоне». — Катя",
   },
   {
     id: "loneliness",
@@ -271,6 +331,19 @@ export const THEMES: ThemeContent[] = [
       { label: "Молчание близких", value: 54 },
     ],
     loop: ["Ждёшь, что поймут", "Закрываешься первой", "Связь не случается"],
+    composition: [
+      { label: "Грусть", value: 36 },
+      { label: "Пустота", value: 28 },
+      { label: "Тревога", value: 20 },
+      { label: "Тепло", value: 16 },
+    ],
+    strengths: [
+      "Ты ценишь настоящую близость",
+      "Ты готова открываться, несмотря на страх",
+      "Ты сделала шаг — пришла поговорить",
+    ],
+    normPct: 67,
+    story: "«Оказалось, нас таких много — и это уже теплее». — Соня",
   },
   {
     id: "boundaries",
@@ -315,5 +388,18 @@ export const THEMES: ThemeContent[] = [
       { label: "Чужое недовольство", value: 56 },
     ],
     loop: ["Соглашаешься через силу", "Копится обида", "Винишь себя"],
+    composition: [
+      { label: "Вина", value: 36 },
+      { label: "Обида", value: 28 },
+      { label: "Тревога", value: 20 },
+      { label: "Решимость", value: 16 },
+    ],
+    strengths: [
+      "Ты чуткая к чувствам других",
+      "Ты начала замечать, где теряешь себя",
+      "Ты готова учиться говорить «нет»",
+    ],
+    normPct: 70,
+    story: "«Научилась говорить „нет“ без чувства вины». — Даша",
   },
 ];

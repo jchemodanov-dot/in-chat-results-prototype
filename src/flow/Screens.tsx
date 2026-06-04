@@ -8,6 +8,7 @@ import { GaugeScore } from "./charts/GaugeScore";
 import { ProjectionChart } from "./charts/ProjectionChart";
 import { TriggersChart } from "./charts/TriggersChart";
 import { PatternLoop } from "./charts/PatternLoop";
+import { EmotionDonut } from "./charts/EmotionDonut";
 import { CountUp } from "./charts/CountUp";
 import { Spark, Check, Key } from "../components/icons";
 
@@ -136,28 +137,49 @@ export function BalanceScreen({ theme }: { theme: ThemeContent }) {
   );
 }
 
-/* ---------- 3 · Trajectory (projection) ---------------------------------- */
+/* ---------- 3 · Trajectory (interactive projection) ---------------------- */
 export function TrajectoryScreen({ theme }: { theme: ThemeContent }) {
+  const [mins, setMins] = useState(10);
+  const target = Math.min(94, Math.max(theme.balanceNow + 12, Math.round(theme.balanceTarget + (mins - 10) * 1.8)));
   return (
     <div className="h-full flex flex-col items-center justify-center px-6 text-center">
       <motion.h2 initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className={`text-[24px] font-extrabold ${HEAD} mb-1`}>
         Куда ты можешь прийти
       </motion.h2>
-      <p className={`text-[13.5px] ${SUB} mb-3 max-w-[300px]`}>
-        Путь к <b className="accent-text">«{theme.outcome}»</b> с поддержкой обычно заметно короче
-      </p>
+      <p className={`text-[13px] ${SUB} mb-3`}>Подвигай — прогноз подстроится под тебя</p>
       <div className="rounded-3xl bg-white p-3 pb-2 shadow-[0_10px_26px_-14px_rgba(40,50,90,0.3)]">
-        <ProjectionChart now={theme.balanceNow} target={theme.balanceTarget} width={290} />
+        <ProjectionChart now={theme.balanceNow} target={target} width={290} />
       </div>
-      <div className="flex items-center gap-5 mt-3.5 text-[12.5px] font-semibold">
-        <span className="flex items-center gap-1.5">
-          <span className="w-3 h-[3px] rounded-full" style={{ background: "var(--accent)" }} />
-          <span className={HEAD}>с планом</span>
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-3 h-[3px] rounded-full bg-[#b9bccb]" />
-          <span className={SUB}>сам по себе</span>
-        </span>
+      <div
+        className="w-full max-w-[300px] mt-4"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <div className="flex justify-between items-baseline text-[13px] mb-1.5">
+          <span className="text-[#33333f] font-medium">
+            Уделять себе: <b className={HEAD}>{mins} мин/день</b>
+          </span>
+          <span className="accent-text font-extrabold">цель ~{target}</span>
+        </div>
+        <input
+          type="range"
+          min={5}
+          max={20}
+          value={mins}
+          onChange={(e) => setMins(Number(e.target.value))}
+          className="w-full cursor-pointer"
+          style={{ accentColor: "var(--accent)" }}
+        />
+        <div className="flex items-center gap-5 mt-2.5 justify-center text-[12.5px] font-semibold">
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-[3px] rounded-full" style={{ background: "var(--accent)" }} />
+            <span className={HEAD}>с планом</span>
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="w-3 h-[3px] rounded-full bg-[#b9bccb]" />
+            <span className={SUB}>сам по себе</span>
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -237,6 +259,58 @@ export function LoopScreen({ theme }: { theme: ThemeContent }) {
       >
         В следующей сессии разорвём этот круг в самом слабом месте.
       </motion.p>
+    </div>
+  );
+}
+
+/* ---------- Composition (emotion donut) ---------------------------------- */
+export function CompositionScreen({ theme }: { theme: ThemeContent }) {
+  return (
+    <div className="h-full flex flex-col items-center justify-center px-6 text-center">
+      <motion.h2 initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className={`text-[24px] font-extrabold ${HEAD} mb-1`}>
+        Из чего складывается состояние
+      </motion.h2>
+      <p className={`text-[13.5px] ${SUB} mb-4 max-w-[290px]`}>Когда чувства названы, ими становится проще управлять</p>
+      <EmotionDonut data={theme.composition} />
+    </div>
+  );
+}
+
+/* ---------- Support (strengths + you're not alone) ----------------------- */
+export function SupportScreen({ theme }: { theme: ThemeContent }) {
+  return (
+    <div className="h-full flex flex-col justify-center px-6">
+      <motion.h2 initial={{ y: 16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className={`text-[24px] font-extrabold ${HEAD} text-center`}>
+        На что можно опереться
+      </motion.h2>
+      <p className={`text-[13.5px] ${SUB} text-center mb-4`}>Это уже твоя опора — я просто заметила её</p>
+      <div className="space-y-2.5">
+        {theme.strengths.map((s, i) => (
+          <motion.div
+            key={i}
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 + i * 0.15, ...spring }}
+            className="flex items-center gap-3 bg-white rounded-2xl p-3 shadow-[0_6px_18px_-10px_rgba(40,50,90,0.22)]"
+          >
+            <span className="shrink-0 w-8 h-8 rounded-full accent-chip flex items-center justify-center">
+              <Spark size={15} />
+            </span>
+            <span className="text-[14px] font-medium text-[#33333f] leading-snug">{s}</span>
+          </motion.div>
+        ))}
+      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        className="accent-zone accent-border border rounded-2xl p-3.5 mt-4 text-center"
+      >
+        <div className="text-[14px] text-[#33333f]">
+          <b className="accent-text text-[17px]">{theme.normPct}%</b> людей с этой темой описывают похожее
+        </div>
+        <p className="text-[13px] text-[#6a6a7a] italic mt-1.5 leading-snug">{theme.story}</p>
+      </motion.div>
     </div>
   );
 }

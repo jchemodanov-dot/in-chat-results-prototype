@@ -7,9 +7,11 @@ import { FlowProgress } from "./FlowProgress";
 import {
   AnalyzingScreen,
   ProfileScreen,
+  CompositionScreen,
   BalanceScreen,
   TriggersScreen,
   LoopScreen,
+  SupportScreen,
   TrajectoryScreen,
   RoadmapScreen,
 } from "./Screens";
@@ -24,9 +26,11 @@ export function RevealFlow({ theme }: { theme: ThemeContent }) {
   const STEPS = [
     { C: AnalyzingScreen, cta: null as string | null, auto: 3500 },
     { C: ProfileScreen, cta: "Дальше" },
+    { C: CompositionScreen, cta: "Дальше" },
     { C: BalanceScreen, cta: "Дальше" },
     { C: TriggersScreen, cta: "Дальше" },
-    { C: LoopScreen, cta: "Что дальше?" },
+    { C: LoopScreen, cta: "Дальше" },
+    { C: SupportScreen, cta: "Что дальше?" },
     { C: TrajectoryScreen, cta: "Хочу так" },
     { C: RoadmapScreen, cta: theme.cta },
   ];
@@ -34,7 +38,7 @@ export function RevealFlow({ theme }: { theme: ThemeContent }) {
   const [index, setIndex] = useState(() => {
     if (typeof window === "undefined") return 0;
     const s = Number(new URLSearchParams(window.location.search).get("screen"));
-    return Number.isInteger(s) && s >= 1 && s <= 6 ? s : 0;
+    return Number.isInteger(s) && s >= 1 && s <= 8 ? s : 0;
   });
   const [dir, setDir] = useState(1);
   const [toast, setToast] = useState(false);
