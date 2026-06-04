@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import type { ThemeContent } from "../content/themes";
 import { AnimatedIllustration } from "./AnimatedIllustration";
 import { Confetti } from "./Confetti";
+import { RadarChart } from "./charts/RadarChart";
+import { GaugeScore } from "./charts/GaugeScore";
+import { ProjectionChart } from "./charts/ProjectionChart";
+import { CountUp } from "./charts/CountUp";
 import { Spark, Check } from "../components/icons";
 
 const spring = { type: "spring", stiffness: 260, damping: 20 } as const;
@@ -11,218 +15,174 @@ const pop = { type: "spring", stiffness: 340, damping: 17 } as const;
 const HEAD = "text-[#22222e]";
 const SUB = "text-[#6a6a7a]";
 
-const HEART_THEMES = ["relationships", "loneliness"];
 const decorFor = (id: string): "hearts" | "sparkles" =>
-  HEART_THEMES.includes(id) ? "hearts" : "sparkles";
+  ["relationships", "loneliness"].includes(id) ? "hearts" : "sparkles";
 
-/* ---------- 0 · Scanning -------------------------------------------------- */
-export function ScanScreen({ theme }: { theme: ThemeContent }) {
-  const lines = ["Слушаю тебя…", theme.scanLine, "Собираю твой разбор…"];
-  const [i, setI] = useState(0);
+function Badge({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.span
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ ...pop, delay: 0.1 }}
+      className="accent-chip inline-flex items-center gap-1.5 rounded-full pl-2.5 pr-3.5 py-1.5 text-[12.5px] font-bold"
+    >
+      <Spark size={13} /> {children}
+    </motion.span>
+  );
+}
+
+/* ---------- 0 · Analyzing (building the report) -------------------------- */
+const ANALYZE = ["Читаю твою сессию", "Нахожу повторяющийся паттерн", "Считаю эмоциональный профиль", "Собираю твой план"];
+
+export function AnalyzingScreen({ theme }: { theme: ThemeContent }) {
+  const [step, setStep] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setI((p) => Math.min(p + 1, lines.length - 1)), 820);
+    const t = setInterval(() => setStep((s) => Math.min(s + 1, ANALYZE.length)), 720);
     return () => clearInterval(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div className="h-full flex flex-col items-center justify-center px-8 text-center">
-      <div className="relative mb-10 w-[236px] h-[236px] flex items-center justify-center">
-        {[0, 1, 2].map((k) => (
-          <span
-            key={k}
-            className="pulse-ring absolute w-[200px] h-[200px] rounded-full"
-            style={{
-              background:
-                "radial-gradient(circle, color-mix(in srgb, var(--accent) 38%, transparent), transparent 70%)",
-              animationDelay: `${k * 0.6}s`,
-            }}
-          />
-        ))}
-        <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={spring}>
-          <AnimatedIllustration id="scan" size={208} />
-        </motion.div>
-      </div>
-      <motion.p
-        key={i}
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className={`text-[20px] font-semibold ${HEAD} min-h-[56px] max-w-[280px]`}
+    <div className="h-full flex flex-col items-center justify-center px-9 text-center">
+      <motion.div
+        initial={{ scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={spring}
+        className="mb-9"
       >
-        {lines[i]}
-      </motion.p>
-      <p className={`text-[13px] ${SUB} mt-1`}>Spacey анализирует твою сессию</p>
+        <AnimatedIllustration id="scan" size={150} />
+      </motion.div>
+
+      <p className={`text-[15px] ${SUB} mb-5`}>{theme.scanLine}</p>
+
+      <div className="w-full max-w-[280px] space-y-2.5 text-left">
+        {ANALYZE.map((line, i) => {
+          const done = step > i;
+          const active = step === i;
+          return (
+            <div key={i} className="flex items-center gap-3" style={{ opacity: done || active ? 1 : 0.35 }}>
+              <span
+                className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+                style={{
+                  background: done ? "var(--accent)" : "transparent",
+                  border: done ? "none" : "2px solid color-mix(in srgb, var(--accent) 35%, white)",
+                }}
+              >
+                {done ? (
+                  <Check size={13} strokeWidth={3} className="text-white" />
+                ) : (
+                  <motion.span
+                    className="w-2 h-2 rounded-full"
+                    style={{ background: "var(--accent)" }}
+                    animate={{ opacity: active ? [0.3, 1, 0.3] : 0.3 }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
+                )}
+              </span>
+              <span className={`text-[14.5px] font-medium ${done ? HEAD : SUB}`}>{line}</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-/* ---------- 1 · Reveal ---------------------------------------------------- */
-export function RevealScreen({ theme }: { theme: ThemeContent }) {
+/* ---------- 1 · Emotional profile (radar) -------------------------------- */
+export function ProfileScreen({ theme }: { theme: ThemeContent }) {
+  const top = [...theme.profile].sort((a, b) => b.value - a.value)[0];
   return (
-    <div className="h-full flex flex-col items-center justify-center px-7 text-center relative">
-      <Confetti />
-      <motion.span
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ ...pop, delay: 0.15 }}
-        className="accent-chip inline-flex items-center gap-1.5 rounded-full pl-2.5 pr-3.5 py-2 text-[13px] font-bold mb-6"
-      >
-        <Spark size={14} /> {theme.badge}
-      </motion.span>
-      <motion.div
-        initial={{ scale: 0.4, opacity: 0, y: 16 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        transition={{ ...spring, delay: 0.05 }}
-      >
-        <AnimatedIllustration id={theme.id} size={328} decor={decorFor(theme.id)} />
-      </motion.div>
+    <div className="h-full flex flex-col items-center justify-center px-6 text-center">
+      <Badge>{theme.badge}</Badge>
       <motion.h1
-        initial={{ y: 24, opacity: 0 }}
+        initial={{ y: 16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.35, duration: 0.5 }}
-        className={`text-[27px] leading-[1.12] font-extrabold ${HEAD} tracking-tight mt-7 w-full px-1`}
+        transition={{ delay: 0.15, duration: 0.5 }}
+        className={`text-[25px] leading-[1.12] font-extrabold ${HEAD} tracking-tight mt-3 w-full`}
       >
         {theme.headline}
       </motion.h1>
+      <p className={`text-[13.5px] ${SUB} mt-1.5 mb-1`}>Вот что я услышала — твой эмоциональный профиль</p>
+
+      <RadarChart data={theme.profile} size={262} />
+
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.65 }}
-        className={`text-[15px] ${SUB} mt-3`}
+        transition={{ delay: 0.9 }}
+        className={`text-[14.5px] ${SUB} leading-[1.45] mt-1 max-w-[300px]`}
       >
-        Это про тебя. Давай покажу, что я увидела →
+        Сильнее всего сейчас звучит <b className="accent-text">«{top.label.toLowerCase()}»</b>. {theme.summary}
       </motion.p>
     </div>
   );
 }
 
-/* ---------- 2 · Insight --------------------------------------------------- */
-export function InsightScreen({ theme }: { theme: ThemeContent }) {
-  return (
-    <div className="h-full flex flex-col items-center justify-center px-8 text-center">
-      <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={spring}>
-        <AnimatedIllustration id={theme.id} size={212} decor={decorFor(theme.id)} />
-      </motion.div>
-      <motion.p
-        initial={{ y: 22, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.55 }}
-        className={`text-[22px] leading-[1.4] font-semibold ${HEAD} mt-9`}
-      >
-        {theme.summary}
-      </motion.p>
-    </div>
-  );
-}
-
-/* ---------- 3 · Journey (the quest) -------------------------------------- */
-export function JourneyScreen({ theme }: { theme: ThemeContent }) {
-  return (
-    <div className="h-full flex flex-col justify-center px-6">
-      <motion.h2
-        initial={{ y: 16, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className={`text-[24px] font-extrabold ${HEAD} text-center mb-3`}
-      >
-        Вот что разберём вместе
-      </motion.h2>
-      <div className="flex justify-center mb-4">
-        <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={spring}>
-          <AnimatedIllustration id="journey" size={176} decor="none" />
-        </motion.div>
-      </div>
-      <div className="space-y-2.5">
-        {theme.steps.map((s, i) => (
-          <motion.div
-            key={i}
-            initial={{ x: -24, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.3 + i * 0.16, ...spring }}
-            className="flex items-center gap-3 bg-white rounded-2xl p-3 shadow-[0_6px_18px_-10px_rgba(40,50,90,0.25)]"
-          >
-            <span
-              className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[15px]"
-              style={{ background: "var(--accent)" }}
-            >
-              {i + 1}
-            </span>
-            <span className="text-[14px] leading-[1.25] text-[#33333f] font-medium">{s}</span>
-          </motion.div>
-        ))}
-        <motion.div
-          initial={{ scale: 0.6, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3 + 3 * 0.16, ...pop }}
-          className="flex items-center gap-3 rounded-2xl p-3"
-          style={{ background: "color-mix(in srgb, var(--accent) 15%, white)" }}
-        >
-          <span className="shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-[18px]">🏁</span>
-          <span
-            className="text-[15px] font-extrabold"
-            style={{ color: "color-mix(in srgb, var(--accent) 72%, #2a2a38)" }}
-          >
-            {theme.outcome}
-          </span>
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-/* ---------- 4 · Transformation ------------------------------------------- */
-export function TransformScreen({ theme }: { theme: ThemeContent }) {
+/* ---------- 2 · Balance score (gauge) ------------------------------------ */
+export function BalanceScreen({ theme }: { theme: ThemeContent }) {
   return (
     <div className="h-full flex flex-col items-center justify-center px-7 text-center">
       <motion.h2
         initial={{ y: 16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={`text-[24px] font-extrabold ${HEAD} mb-9`}
+        className={`text-[24px] font-extrabold ${HEAD} mb-1`}
       >
-        Куда мы идём
+        Твой эмоциональный баланс
       </motion.h2>
-      <div className="flex items-stretch gap-2.5 w-full justify-center">
-        <motion.div
-          initial={{ x: -20, opacity: 0, scale: 0.9 }}
-          animate={{ x: 0, opacity: 1, scale: 1 }}
-          transition={spring}
-          className="flex-1 max-w-[130px] rounded-3xl bg-white p-4 shadow-sheet flex flex-col items-center justify-center"
-        >
-          <div className="text-[30px] grayscale opacity-80">🫥</div>
-          <div className="text-[12.5px] font-semibold text-[#6a6a7a] mt-1.5 leading-tight">{theme.from}</div>
-        </motion.div>
-        <motion.div
-          initial={{ scale: 0, rotate: -40 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ delay: 0.35, ...pop }}
-          className="flex items-center text-[26px] font-black"
-          style={{ color: "var(--accent)" }}
-        >
-          →
-        </motion.div>
-        <motion.div
-          initial={{ x: 20, opacity: 0, scale: 0.9 }}
-          animate={{ x: 0, opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5, ...spring }}
-          className="flex-1 max-w-[130px] rounded-3xl p-4 shadow-sheet text-white flex flex-col items-center justify-center"
-          style={{ background: "var(--accent)" }}
-        >
-          <div className="text-[30px]">✨</div>
-          <div className="text-[12.5px] font-bold mt-1.5 leading-tight">{theme.to}</div>
-        </motion.div>
-      </div>
-      <motion.p
-        initial={{ opacity: 0, y: 14 }}
+      <p className={`text-[13.5px] ${SUB} mb-3`}>Это точка старта, а не приговор</p>
+
+      <GaugeScore value={theme.balanceNow} target={theme.balanceTarget} size={216} />
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.75 }}
-        className={`text-[15px] ${SUB} mt-9 max-w-[270px]`}
+        transition={{ delay: 1.5 }}
+        className="mt-4 rounded-2xl bg-white px-4 py-3 shadow-[0_8px_22px_-12px_rgba(40,50,90,0.25)] flex items-center gap-3"
       >
-        Я проведу тебя по этому пути — шаг за шагом, в твоём темпе.
-      </motion.p>
+        <span className="text-[14px] font-medium text-[#33333f]">
+          Сейчас <b className={HEAD}>{theme.balanceNow}</b>. С планом обычно выходят к{" "}
+          <b className="accent-text">
+            ~<CountUp to={theme.balanceTarget} delay={1.6} />
+          </b>
+        </span>
+      </motion.div>
     </div>
   );
 }
 
-/* ---------- 5 · Plan (the close) ----------------------------------------- */
+/* ---------- 3 · Trajectory (projection) ---------------------------------- */
+export function TrajectoryScreen({ theme }: { theme: ThemeContent }) {
+  return (
+    <div className="h-full flex flex-col items-center justify-center px-6 text-center">
+      <motion.h2
+        initial={{ y: 16, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className={`text-[24px] font-extrabold ${HEAD} mb-1`}
+      >
+        Куда ты можешь прийти
+      </motion.h2>
+      <p className={`text-[13.5px] ${SUB} mb-3 max-w-[300px]`}>
+        Путь к <b className="accent-text">«{theme.outcome}»</b> с поддержкой обычно заметно короче
+      </p>
+
+      <div className="rounded-3xl bg-white p-3 pb-2 shadow-[0_10px_26px_-14px_rgba(40,50,90,0.3)]">
+        <ProjectionChart now={theme.balanceNow} target={theme.balanceTarget} width={290} />
+      </div>
+
+      <div className="flex items-center gap-5 mt-3.5 text-[12.5px] font-semibold">
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-[3px] rounded-full" style={{ background: "var(--accent)" }} />
+          <span className={HEAD}>с планом</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-[3px] rounded-full bg-[#b9bccb]" />
+          <span className={SUB}>сам по себе</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- 4 · Plan (the close) ----------------------------------------- */
 export function PlanScreen({ theme }: { theme: ThemeContent }) {
   return (
     <div className="h-full flex flex-col justify-center px-6 relative">
@@ -231,14 +191,14 @@ export function PlanScreen({ theme }: { theme: ThemeContent }) {
         initial={{ scale: 0.7, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={spring}
-        className="flex justify-center mb-3"
+        className="flex justify-center mb-2"
       >
-        <AnimatedIllustration id={theme.id} size={158} decor={decorFor(theme.id)} />
+        <AnimatedIllustration id={theme.id} size={130} decor={decorFor(theme.id)} />
       </motion.div>
       <motion.h2
         initial={{ y: 14, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={`text-[25px] font-extrabold ${HEAD} text-center leading-[1.12]`}
+        className={`text-[24px] font-extrabold ${HEAD} text-center leading-[1.12]`}
       >
         Твой персональный
         <br />
@@ -248,23 +208,23 @@ export function PlanScreen({ theme }: { theme: ThemeContent }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className={`text-center text-[14px] ${SUB} mt-2 mb-4`}
+        className={`text-center text-[13.5px] ${SUB} mt-1.5 mb-3.5`}
       >
         {theme.lockedSubline}
       </motion.p>
-      <div className="bg-white rounded-[24px] p-4 shadow-sheet space-y-3">
+      <div className="bg-white rounded-[22px] p-4 shadow-sheet space-y-2.5">
         {theme.lockedItems.map((it, i) => (
           <motion.div
             key={i}
             initial={{ x: -16, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.35 + i * 0.14, ...spring }}
+            transition={{ delay: 0.35 + i * 0.13, ...spring }}
             className="flex items-center gap-2.5"
           >
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ delay: 0.45 + i * 0.14, ...pop }}
+              transition={{ delay: 0.45 + i * 0.13, ...pop }}
               className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white"
               style={{ background: "var(--accent)" }}
             >
@@ -278,7 +238,7 @@ export function PlanScreen({ theme }: { theme: ThemeContent }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
-        className="flex items-center justify-center gap-1.5 mt-4 text-[13px] font-bold"
+        className="flex items-center justify-center gap-1.5 mt-3.5 text-[13px] font-bold"
         style={{ color: "color-mix(in srgb, var(--accent) 70%, #2a2a38)" }}
       >
         <span className="w-2 h-2 rounded-full" style={{ background: "var(--accent)" }} />

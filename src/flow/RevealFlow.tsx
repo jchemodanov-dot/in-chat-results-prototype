@@ -5,11 +5,10 @@ import { ArrowRight } from "../components/icons";
 import { Particles } from "./Particles";
 import { FlowProgress } from "./FlowProgress";
 import {
-  ScanScreen,
-  RevealScreen,
-  InsightScreen,
-  JourneyScreen,
-  TransformScreen,
+  AnalyzingScreen,
+  ProfileScreen,
+  BalanceScreen,
+  TrajectoryScreen,
   PlanScreen,
 } from "./Screens";
 
@@ -21,18 +20,17 @@ const variants = {
 
 export function RevealFlow({ theme }: { theme: ThemeContent }) {
   const STEPS = [
-    { C: ScanScreen, cta: null as string | null, auto: 2700 },
-    { C: RevealScreen, cta: "Дальше" },
-    { C: InsightScreen, cta: "Дальше" },
-    { C: JourneyScreen, cta: "Дальше" },
-    { C: TransformScreen, cta: "Хочу так" },
+    { C: AnalyzingScreen, cta: null as string | null, auto: 3500 },
+    { C: ProfileScreen, cta: "Дальше" },
+    { C: BalanceScreen, cta: "Что дальше?" },
+    { C: TrajectoryScreen, cta: "Хочу так" },
     { C: PlanScreen, cta: theme.cta },
   ];
 
   const [index, setIndex] = useState(() => {
     if (typeof window === "undefined") return 0;
     const s = Number(new URLSearchParams(window.location.search).get("screen"));
-    return Number.isInteger(s) && s >= 1 && s <= 5 ? s : 0;
+    return Number.isInteger(s) && s >= 1 && s <= 4 ? s : 0;
   });
   const [dir, setDir] = useState(1);
   const [toast, setToast] = useState(false);

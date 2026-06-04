@@ -1,44 +1,46 @@
-// Adaptive content system for the post-session reveal flow.
+// Adaptive content + data system for the post-session result report.
 //
-// ONE universal cinematic flow (scan → reveal → insight → journey →
-// transformation → plan). Only the words and the accent hue change per session
-// theme — the structure and motion stay constant.
+// ONE universal flow (analyzing → emotional profile → balance score →
+// trajectory → plan). Only the words, numbers and accent hue change per theme.
 //
-// Tone rules baked into the copy: gentle, warm, confident, never clinical.
-// We say "похоже / мы заметили / разберём", never "диагноз / расстройство".
+// The numbers are a reflective snapshot of what the AI "heard" in the session —
+// framed softly ("похоже / я заметила"), never as a clinical diagnosis.
+//
+// Tone rules: gentle, warm, confident, never clinical. We say
+// "похоже / мы заметили / разберём", never "диагноз / расстройство".
+
+export interface ProfileDim {
+  /** short label that fits around a radar axis */
+  label: string;
+  /** 0–100 intensity */
+  value: number;
+}
 
 export interface ThemeContent {
-  /** stable id — also the illustration filename and re-animation key */
   id: string;
-  /** short label for the demo theme switcher */
   label: string;
-  /** the user's own words that opened the session */
   userMessage: string;
-  /** themed middle line shown while "scanning" the session */
   scanLine: string;
-  /** small emotional state-shift badge above the headline */
   badge: string;
-  /** the hero line — the "we found the thread" hook, personalized */
   headline: string;
-  /** 1–2 warm sentences reflecting state + the pattern behind it */
   summary: string;
-  /** exactly 3 "what we'll explore next" steps — the visible journey */
   steps: [string, string, string];
-  /** the desired direction of movement, shown as the journey's endpoint */
   outcome: string;
-  /** transformation poles: from the painful state → to the outcome */
   from: string;
   to: string;
-  /** reframed plan title — value is already prepared, not hidden */
   lockedTitle: string;
-  /** concrete value items that wait inside the plan */
   lockedItems: string[];
-  /** one line naming exactly what opens next */
   lockedSubline: string;
-  /** primary CTA, tuned to the emotional state */
   cta: string;
-  /** muted emotional accent, kept inside the lavender product family */
   accent: string;
+
+  // --- data for the charts -------------------------------------------------
+  /** 5 emotional-profile dimensions (radar). High = more present right now. */
+  profile: [ProfileDim, ProfileDim, ProfileDim, ProfileDim, ProfileDim];
+  /** current emotional-balance score (0–100, gauge) */
+  balanceNow: number;
+  /** where the plan can take it (0–100) */
+  balanceTarget: number;
 }
 
 export const THEMES: ThemeContent[] = [
@@ -70,6 +72,15 @@ export const THEMES: ThemeContent[] = [
     lockedSubline: "Дальше — причины, паттерн и первые шаги.",
     cta: "Открыть мой план",
     accent: "#A86BCB",
+    profile: [
+      { label: "Тревога", value: 74 },
+      { label: "Отвержение", value: 68 },
+      { label: "Контроль", value: 60 },
+      { label: "Самокритика", value: 52 },
+      { label: "Опора", value: 30 },
+    ],
+    balanceNow: 34,
+    balanceTarget: 78,
   },
   {
     id: "anxiety",
@@ -99,6 +110,15 @@ export const THEMES: ThemeContent[] = [
     lockedSubline: "Дальше — причины, паттерн и первые шаги.",
     cta: "Открыть мой план",
     accent: "#5784D8",
+    profile: [
+      { label: "Тревога", value: 78 },
+      { label: "Напряжение", value: 70 },
+      { label: "Контроль", value: 64 },
+      { label: "Руминация", value: 58 },
+      { label: "Опора", value: 28 },
+    ],
+    balanceNow: 30,
+    balanceTarget: 80,
   },
   {
     id: "burnout",
@@ -128,6 +148,15 @@ export const THEMES: ThemeContent[] = [
     lockedSubline: "Дальше — причины, паттерн и первые шаги.",
     cta: "Вернуть силы",
     accent: "#CC8A45",
+    profile: [
+      { label: "Истощение", value: 80 },
+      { label: "Переработка", value: 72 },
+      { label: "Самокритика", value: 56 },
+      { label: "Отдых", value: 26 },
+      { label: "Ресурс", value: 22 },
+    ],
+    balanceNow: 26,
+    balanceTarget: 76,
   },
   {
     id: "self-esteem",
@@ -157,6 +186,15 @@ export const THEMES: ThemeContent[] = [
     lockedSubline: "Дальше — причины, паттерн и первые шаги.",
     cta: "Открыть мой план",
     accent: "#7A6BE3",
+    profile: [
+      { label: "Критик", value: 76 },
+      { label: "Оценка других", value: 70 },
+      { label: "Сравнение", value: 64 },
+      { label: "Самоценность", value: 28 },
+      { label: "Поддержка", value: 24 },
+    ],
+    balanceNow: 28,
+    balanceTarget: 78,
   },
   {
     id: "loneliness",
@@ -186,6 +224,15 @@ export const THEMES: ThemeContent[] = [
     lockedSubline: "Дальше — причины, паттерн и первые шаги.",
     cta: "Открыть мой план",
     accent: "#3FA396",
+    profile: [
+      { label: "Одиночество", value: 75 },
+      { label: "Закрытость", value: 66 },
+      { label: "Отвержение", value: 60 },
+      { label: "Близость", value: 26 },
+      { label: "Доверие", value: 30 },
+    ],
+    balanceNow: 30,
+    balanceTarget: 76,
   },
   {
     id: "boundaries",
@@ -215,5 +262,14 @@ export const THEMES: ThemeContent[] = [
     lockedSubline: "Дальше — причины, паттерн и первые шаги.",
     cta: "Открыть мой план",
     accent: "#5C63CC",
+    profile: [
+      { label: "Вина", value: 72 },
+      { label: "«Нет»", value: 76 },
+      { label: "Угождение", value: 68 },
+      { label: "Границы", value: 24 },
+      { label: "Опора", value: 30 },
+    ],
+    balanceNow: 31,
+    balanceTarget: 79,
   },
 ];
